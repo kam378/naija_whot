@@ -238,6 +238,29 @@ let market = [];
 
 const marketElement = document.getElementById("market");
 
+const start = () => {
+
+  shuffled = [];
+
+  playerDeck = [];
+
+  opponentDeck = [];
+
+  played = [];
+
+  market = [];
+
+  shuffle();
+
+  share();
+
+  updatePlayerCards();
+
+  updateCompCards();  
+
+  updatePlayed();
+}
+
 // to get the players current cards and add eventlisteners for click when called
 const updateEventListeners = () => {
   playerCards.forEach(card => {
@@ -258,6 +281,13 @@ const goMarket = (userDeck) => {
   market.shift();
 }
 
+const scheduleCompPlay = () => {
+  canPlay = false;
+  setTimeout(() => {
+    compPlay();
+  }, 2000);
+}
+
 marketElement.addEventListener("click", () => {  
   if (canPlay) {
     if (market.length < 5){
@@ -265,9 +295,7 @@ marketElement.addEventListener("click", () => {
     }
     goMarket(playerDeck);
     updatePlayerCards();  
-    setTimeout(() => {
-      compPlay();
-    }, 2000);
+    scheduleCompPlay();
   }
 })
 
@@ -410,13 +438,14 @@ const checkCardMatch = (arr) => {
 const checkCompWin = () => {
   if (opponentDeck.length == 0){
     alert("Computer Wins!!");
-    document.location.reload();
+    start();
 
   }
 }
 
 const compPlay = () => {
 
+  canPlay = false;
 
   let match = [];
 
@@ -442,7 +471,6 @@ const compPlay = () => {
       if (opponentDeck[i].number == match[index].number && opponentDeck[i].shape == match[index].shape){
 
         if(opponentDeck[i].number == "1"){
-          canPlay = false;
           played.unshift(opponentDeck[i]);
           opponentDeck.splice(i, 1);
           updatePlayed();
@@ -450,13 +478,11 @@ const compPlay = () => {
           setTimeout(() => {
             compPlay();
           }, 2000);
-          canPlay = true;
           checkCompWin();
           return;
         }
 
         if(opponentDeck[i].number == "2"){
-          canPlay = false;
           played.unshift(opponentDeck[i]);
           opponentDeck.splice(i, 1);
           for(let i = 0; i < 2; i++){
@@ -469,13 +495,11 @@ const compPlay = () => {
           setTimeout(() => {
             compPlay();
           }, 2000);
-          canPlay = true;
           checkCompWin();
           return;
         }
 
         if(opponentDeck[i].number == "14"){
-          canPlay = false;
           played.unshift(opponentDeck[i]);
           opponentDeck.splice(i, 1);
           playerDeck.push(market[0]);
@@ -486,7 +510,6 @@ const compPlay = () => {
           setTimeout(() => {
             compPlay();
           }, 2000);
-          canPlay = true;
           checkCompWin();
           return;
         }
@@ -507,13 +530,14 @@ const compPlay = () => {
 
   }
 
+  canPlay = true;
 
 }
 
 const checkWin = () => {
   if (playerDeck.length == 0){
     alert("You Win!!");
-    document.location.reload();
+    start();
   }
 }
 
@@ -584,9 +608,7 @@ const play = (id) => {
 
     checkWin()
 
-    setTimeout(() => {
-      compPlay();
-    }, 2000);
+    scheduleCompPlay();
 
     if (market.length < 5){
       updateMarket()
